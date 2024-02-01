@@ -1,0 +1,14 @@
+/Users/agustinmoore/keiron/crm/fileFormatterAPI/target/debug/deps/libpyo3_build_config-454a1cc0ff57b068.rmeta: /Users/agustinmoore/.cargo/registry/src/index.crates.io-6f17d22bba15001f/pyo3-build-config-0.20.2/src/lib.rs /Users/agustinmoore/.cargo/registry/src/index.crates.io-6f17d22bba15001f/pyo3-build-config-0.20.2/src/errors.rs /Users/agustinmoore/.cargo/registry/src/index.crates.io-6f17d22bba15001f/pyo3-build-config-0.20.2/src/impl_.rs /Users/agustinmoore/keiron/crm/fileFormatterAPI/target/debug/build/pyo3-build-config-08aa48b185eea56a/out/pyo3-build-config-file.txt /Users/agustinmoore/keiron/crm/fileFormatterAPI/target/debug/build/pyo3-build-config-08aa48b185eea56a/out/pyo3-build-config.txt
+
+/Users/agustinmoore/keiron/crm/fileFormatterAPI/target/debug/deps/libpyo3_build_config-454a1cc0ff57b068.rlib: /Users/agustinmoore/.cargo/registry/src/index.crates.io-6f17d22bba15001f/pyo3-build-config-0.20.2/src/lib.rs /Users/agustinmoore/.cargo/registry/src/index.crates.io-6f17d22bba15001f/pyo3-build-config-0.20.2/src/errors.rs /Users/agustinmoore/.cargo/registry/src/index.crates.io-6f17d22bba15001f/pyo3-build-config-0.20.2/src/impl_.rs /Users/agustinmoore/keiron/crm/fileFormatterAPI/target/debug/build/pyo3-build-config-08aa48b185eea56a/out/pyo3-build-config-file.txt /Users/agustinmoore/keiron/crm/fileFormatterAPI/target/debug/build/pyo3-build-config-08aa48b185eea56a/out/pyo3-build-config.txt
+
+/Users/agustinmoore/keiron/crm/fileFormatterAPI/target/debug/deps/pyo3_build_config-454a1cc0ff57b068.d: /Users/agustinmoore/.cargo/registry/src/index.crates.io-6f17d22bba15001f/pyo3-build-config-0.20.2/src/lib.rs /Users/agustinmoore/.cargo/registry/src/index.crates.io-6f17d22bba15001f/pyo3-build-config-0.20.2/src/errors.rs /Users/agustinmoore/.cargo/registry/src/index.crates.io-6f17d22bba15001f/pyo3-build-config-0.20.2/src/impl_.rs /Users/agustinmoore/keiron/crm/fileFormatterAPI/target/debug/build/pyo3-build-config-08aa48b185eea56a/out/pyo3-build-config-file.txt /Users/agustinmoore/keiron/crm/fileFormatterAPI/target/debug/build/pyo3-build-config-08aa48b185eea56a/out/pyo3-build-config.txt
+
+/Users/agustinmoore/.cargo/registry/src/index.crates.io-6f17d22bba15001f/pyo3-build-config-0.20.2/src/lib.rs:
+/Users/agustinmoore/.cargo/registry/src/index.crates.io-6f17d22bba15001f/pyo3-build-config-0.20.2/src/errors.rs:
+/Users/agustinmoore/.cargo/registry/src/index.crates.io-6f17d22bba15001f/pyo3-build-config-0.20.2/src/impl_.rs:
+/Users/agustinmoore/keiron/crm/fileFormatterAPI/target/debug/build/pyo3-build-config-08aa48b185eea56a/out/pyo3-build-config-file.txt:
+/Users/agustinmoore/keiron/crm/fileFormatterAPI/target/debug/build/pyo3-build-config-08aa48b185eea56a/out/pyo3-build-config.txt:
+
+# env-dep:CARGO_PKG_VERSION=0.20.2
+# env-dep:OUT_DIR=/Users/agustinmoore/keiron/crm/fileFormatterAPI/target/debug/build/pyo3-build-config-08aa48b185eea56a/out
