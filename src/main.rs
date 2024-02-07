@@ -44,14 +44,12 @@ struct Formatter {
 // ************************* USAR PARA PROBAR FUNCIONES O DEMOS *************************
 
 fn deserialize_python_code(serialized_code: &str) -> String {
-    // Replacing escaped sequences with their actual representations
     let mut deserialized_code = serialized_code
         .replace("\\n", "\n")
         .replace("\\'", "'")
         .replace("\\\"", "\"")
         .replace("\\\\", "\\");
 
-    // Trim the surrounding quotes if they exist
     if deserialized_code.starts_with("'") && deserialized_code.ends_with("'") {
         deserialized_code = deserialized_code[1..deserialized_code.len() - 1].to_string();
     }
@@ -62,7 +60,7 @@ fn deserialize_python_code(serialized_code: &str) -> String {
 fn execute_python_code(py_code: &str, value: &str) -> Result<Value, String> {
     pyo3::prepare_freethreaded_python();
     let py_code = deserialize_python_code(py_code);
-    print!("{}", py_code);
+    print!("codigo python: {}", py_code);
     Python::with_gil(|py| {
         let locals = PyDict::new(py);
         locals
@@ -89,6 +87,7 @@ fn execute_python_code(py_code: &str, value: &str) -> Result<Value, String> {
 #[post("/", format = "json", data = "<payload>")]
 fn receive_code(payload: Json<Payload>) -> Json<Value> {
     let excel_data = &payload.excelData;
+    // descomentar para demos
     // let formatters = get_formatter_functions();
     let formatters = &payload.formatters;
     let mut results = Vec::new();
