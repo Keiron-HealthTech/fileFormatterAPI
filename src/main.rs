@@ -9,7 +9,6 @@ use std::collections::HashMap;
 
 #[macro_use]
 extern crate rocket;
-use pyo3::types::IntoPyDict;
 
 #[derive(Deserialize)]
 struct Payload {
@@ -22,54 +21,17 @@ struct Formatter {
     func: String,
 }
 
-// ESTO ES CODIGO MAS LISTO PARA PRODUCTIVO, SE COMENTA PARA LA POC
-// fn execute_python_code(py_code: &str, value: &str) -> PyResult<()> {
-//     // print!("{:?}", py_code);
-//     // print!("{:?}", value);
-//     let code = format!("{}\nresult = transform(value)", py_code);
-//     pyo3::prepare_freethreaded_python();
-//     Python::with_gil(|py| {
-//         let full_code = format!("{}\ncleaned_string = clean_string(input_string)", py_code);
-//         print!("{:?}", full_code);
-//         let fun: Py<PyAny> = PyModule::from_code(py, &code, "", "")?
-//             .getattr("example")?
-//             .into();
-//         let py_value = PyString::new(py, value);
-//         fun.call1(py, (py_value,))?;
-//         Ok(())
-//     })
-// }
-
-// ESTO ES CODIGO MAS LISTO PARA PRODUCTIVO, SE COMENTA PARA LA POC
-// #[post("/", format = "json", data = "<payload>")]
-// fn receive_code(payload: Json<Payload>) -> String {
-//     let excel_data = &payload.excelData;
-//     let formatters = &payload.formatters;
-//     print!("{:?}", excel_data);
-//     for row in excel_data {
-//         for (key, value) in row {
-//             if let Some(formatter) = formatters.get(key) {
-//                 match execute_python_code(&formatter.func, value) {
-//                     Ok(transformed_value) => println!("Transformed"),
-//                     Err(e) => println!("Error executing formatter for {}: {}", key, e),
-//                 }
-//             }
-//         }
-//     }
-
-//     "Data processed successfully.".to_string()
-// }
+// Funcion para demos
 const TRANSFORM_FUNCTION: &str = r#"
 def transform(value):
     return value.upper()
 "#;
-
+// Funcion para demos
 const CLEAN_STRING_FUNCTION: &str = r#"
 def transform(value):
     return value.replace('.', '').replace('-', '')
 "#;
 
-// Create a mapping of keys to Python functions
 fn get_formatter_functions() -> HashMap<&'static str, &'static str> {
     let mut formatters = HashMap::new();
     formatters.insert("Nombre Paciente", TRANSFORM_FUNCTION);
@@ -78,14 +40,32 @@ fn get_formatter_functions() -> HashMap<&'static str, &'static str> {
     formatters
 }
 
-fn execute_python_code(py_code: &str, value: &str) -> Result<Value, String> {
+fn deserialize_python_code(serialized_code: &str) -> String {
+    // Replacing escaped sequences with their actual representations
+    let mut deserialized_code = serialized_code
+        .replace("\\n", "\n")
+        .replace("\\'", "'")
+        .replace("\\\"", "\"")
+        .replace("\\\\", "\\");
+
+    // Trim the surrounding quotes if they exist
+    if deserialized_code.starts_with("'") && deserialized_code.ends_with("'") {
+        deserialized_code = deserialized_code[1..deserialized_code.len() - 1].to_string();
+    }
+
+    deserialized_code
+}
+
+fn execute_python_code(py_code: &Formatter, value: &str) -> Result<Value, String> {
     pyo3::prepare_freethreaded_python();
+    let py_code = deserialize_python_code(py_code);
+    print!("{}", py_code);
     Python::with_gil(|py| {
         let locals = PyDict::new(py);
         locals
             .set_item("value", PyString::new(py, &value.to_string()))
             .unwrap();
-        py.run(py_code, None, Some(locals))
+        py.run(&py_code, None, Some(locals))
             .map_err(|e| e.to_string())?;
 
         let transform_func = locals
@@ -106,8 +86,9 @@ fn execute_python_code(py_code: &str, value: &str) -> Result<Value, String> {
 #[post("/", format = "json", data = "<payload>")]
 fn receive_code(payload: Json<Payload>) -> Json<Value> {
     let excel_data = &payload.excelData;
-    let formatters = get_formatter_functions(); // Use hardcoded formatters
-    let mut results = Vec::new(); // to collect processed rows
+    // let formatters = get_formatter_functions();
+    let formatters = &payload.formatters;
+    let mut results = Vec::new();
 
     for row in excel_data {
         let mut processed_row = HashMap::new();
