@@ -21,24 +21,27 @@ struct Formatter {
     func: String,
 }
 
-// Funcion para demos
-const TRANSFORM_FUNCTION: &str = r#"
-def transform(value):
-    return value.upper()
-"#;
-// Funcion para demos
-const CLEAN_STRING_FUNCTION: &str = r#"
-def transform(value):
-    return value.replace('.', '').replace('-', '')
-"#;
+// ************************* USAR PARA PROBAR FUNCIONES O DEMOS *************************
+// // Funcion para demos
+// const TRANSFORM_FUNCTION: &str = r#"
+// def transform(value):
+//     return value.upper()
+// "#;
+// // Funcion para demos
+// const CLEAN_STRING_FUNCTION: &str = r#"
+// def transform(value):
+//     return value.replace('.', '').replace('-', '')
+// "#;
 
-fn get_formatter_functions() -> HashMap<&'static str, &'static str> {
-    let mut formatters = HashMap::new();
-    formatters.insert("Nombre Paciente", TRANSFORM_FUNCTION);
-    formatters.insert("Apellidos", TRANSFORM_FUNCTION);
-    formatters.insert("RUN Pacientes", CLEAN_STRING_FUNCTION);
-    formatters
-}
+// // Funcion para demos
+// fn get_formatter_functions() -> HashMap<&'static str, &'static str> {
+//     let mut formatters = HashMap::new();
+//     formatters.insert("Nombre Paciente", TRANSFORM_FUNCTION);
+//     formatters.insert("Apellidos", TRANSFORM_FUNCTION);
+//     formatters.insert("RUN Pacientes", CLEAN_STRING_FUNCTION);
+//     formatters
+// }
+// ************************* USAR PARA PROBAR FUNCIONES O DEMOS *************************
 
 fn deserialize_python_code(serialized_code: &str) -> String {
     // Replacing escaped sequences with their actual representations
@@ -56,7 +59,7 @@ fn deserialize_python_code(serialized_code: &str) -> String {
     deserialized_code
 }
 
-fn execute_python_code(py_code: &Formatter, value: &str) -> Result<Value, String> {
+fn execute_python_code(py_code: &str, value: &str) -> Result<Value, String> {
     pyo3::prepare_freethreaded_python();
     let py_code = deserialize_python_code(py_code);
     print!("{}", py_code);
@@ -94,7 +97,7 @@ fn receive_code(payload: Json<Payload>) -> Json<Value> {
         let mut processed_row = HashMap::new();
         for (key, value) in row {
             if let Some(py_code) = formatters.get(key.as_str()) {
-                match execute_python_code(py_code, value) {
+                match execute_python_code(&py_code.func, value) {
                     Ok(transformed_value) => {
                         println!("Transformed {}: {}", key, transformed_value);
                         processed_row.insert(key.clone(), transformed_value);
