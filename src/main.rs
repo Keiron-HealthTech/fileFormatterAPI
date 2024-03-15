@@ -4,7 +4,7 @@ use pyo3::prelude::*;
 use pyo3::types::{PyDict, PyString};
 use rocket::{serde::json::Json, State};
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Value};
+use serde_json::{json, Error, Value};
 use std::collections::HashMap;
 
 #[macro_use]
@@ -21,27 +21,42 @@ struct Formatter {
     func: String,
 }
 
-// ************************* USAR PARA PROBAR FUNCIONES O DEMOS *************************
-// // Funcion para demos
-// const TRANSFORM_FUNCTION: &str = r#"
-// def transform(value):
-//     return value.upper()
-// "#;
-// // Funcion para demos
-// const CLEAN_STRING_FUNCTION: &str = r#"
-// def transform(value):
-//     return value.replace('.', '').replace('-', '')
-// "#;
+fn transform_json_format(input_json: &str) -> Result<String, String> {
+    let v: Value = serde_json::from_str(input_json)
+        .map_err(|e| format!("Failed to parse input JSON: {}", e))?;
 
-// // Funcion para demos
-// fn get_formatter_functions() -> HashMap<&'static str, &'static str> {
-//     let mut formatters = HashMap::new();
-//     formatters.insert("Nombre Paciente", TRANSFORM_FUNCTION);
-//     formatters.insert("Apellidos", TRANSFORM_FUNCTION);
-//     formatters.insert("RUN Pacientes", CLEAN_STRING_FUNCTION);
-//     formatters
-// }
-// ************************* USAR PARA PROBAR FUNCIONES O DEMOS *************************
+    if let Some(array) = v.as_array() {
+        if array.is_empty() || !array[0].is_array() {
+            return Err("Input JSON does not have a valid format".into());
+        }
+        let keys = array[0].as_array().unwrap();
+        let mut transformed_array = Vec::new();
+
+        for values in array.iter().skip(1) {
+            if let Some(values_array) = values.as_array() {
+                let mut map = HashMap::new();
+                for (i, key) in keys.iter().enumerate() {
+                    if let Some(value) = values_array.get(i) {
+                        map.insert(
+                            key.as_str().unwrap().trim().to_string(),
+                            value.as_str().unwrap().trim().to_string(),
+                        );
+                    } else {
+                        return Err(format!("Missing value for key: {}", key));
+                    }
+                }
+                transformed_array.push(map);
+            } else {
+                return Err("Values must be in an array".into());
+            }
+        }
+
+        serde_json::to_string_pretty(&transformed_array)
+            .map_err(|e| format!("Failed to serialize transformed JSON: {}", e))
+    } else {
+        Err("Input must be a JSON array".into())
+    }
+}
 
 fn deserialize_python_code(serialized_code: &str) -> String {
     let mut deserialized_code = serialized_code
@@ -120,3 +135,27 @@ fn receive_code(payload: Json<Payload>) -> Json<Value> {
 fn rocket() -> _ {
     rocket::build().mount("/", routes![receive_code])
 }
+
+// json input format:
+// {
+//     "excelData": [
+//       {
+//         "Name": "John Doe",
+//         "Age": "30",
+//         "Email": "johndoe@example.com"
+//       },
+//       {
+//         "Name": "Jane Smith",
+//         "Age": "25",
+//         "Email": "janesmith@example.com"
+//       }
+//     ],
+//     "formatters": {
+//       "Name": {
+//         "func": "def transform(value):\\n    return value.upper()"
+//       },
+//       "Email": {
+//         "func": "def transform(value):\\n    return value.lower()"
+//       }
+//     }
+//   }
